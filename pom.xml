@@ -64,4 +64,11 @@
             </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>snapshot</id>
+            <uniqueVersion>true</uniqueVersion>
+            <url>http://snoopy:8080/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
