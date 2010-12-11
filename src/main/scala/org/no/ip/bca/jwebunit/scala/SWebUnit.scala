@@ -59,8 +59,8 @@ trait SWebUnit {
     wt setWorkingForm formName
     f
   }
-  def frame(s: Symbol)(f: => Unit): Unit = frame(_stringForSymbol(s))(f)
-  def frame(frame: String)(f: => Unit): Unit = {
+  def frame[T](s: Symbol)(f: => T): T = frame(_stringForSymbol(s))(f)
+  def frame[T](frame: String)(f: => T): T = {
     val windowName = wt.getTestingEngine match {
       case html: HtmlUnitTestingEngineImpl => html.getCurrentWindow.getName
       case other => throw new IllegalStateException("Support for " + other.getClass + " not implemented")
