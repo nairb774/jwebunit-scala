@@ -7,6 +7,8 @@ import net.sourceforge.jwebunit.htmlunit.{ HtmlUnitTestingEngineImpl, HtmlUnitEl
 import com.gargoylesoftware.htmlunit.Page
 import scalaj.collection.Imports._
 
+import ntlm.NTLMTestingEngine
+
 trait SWebUnit {
   private val wt = new WebTester
   private var afterLinkClick: Option[() => Unit] = None
@@ -24,7 +26,7 @@ trait SWebUnit {
 
   object authorize {
     def ntlm(user: String, password: String, domain: String): Unit = {
-      wt setTestingEngineKey NtlmTestingEngine.register
+      wt setTestingEngineKey NTLMTestingEngine.register
       wt.getTestContext.setNTLMAuthorization(user, password, domain)
     }
   }
@@ -44,6 +46,11 @@ trait SWebUnit {
       case e: HtmlUnitElementImpl => e.getHtmlElement.click[Page]
       case e: IElement => throw new IllegalArgumentException("Unable to click IElement of type: " + e.getClass)
     }
+  }
+  
+  object close {
+    def browser = wt.closeBrowser
+    def window = wt.closeWindow
   }
 
   object element {

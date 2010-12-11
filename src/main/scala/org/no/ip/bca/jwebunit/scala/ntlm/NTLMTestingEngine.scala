@@ -1,13 +1,13 @@
-package org.no.ip.bca.jwebunit.scala
+package org.no.ip.bca.jwebunit.scala.ntlm
 
 import net.sourceforge.jwebunit.htmlunit.HtmlUnitTestingEngineImpl
 import net.sourceforge.jwebunit.util.TestingEngineRegistry
 
-object NtlmTestingEngine {
+object NTLMTestingEngine {
   def register = {
-    val key = classOf[NtlmTestingEngine].getName
+    val key = classOf[NTLMTestingEngine].getName
     try {
-      TestingEngineRegistry.addTestingEngine(key, classOf[NtlmTestingEngine].getName)
+      TestingEngineRegistry.addTestingEngine(key, classOf[NTLMTestingEngine].getName)
     } catch {
       case e: ClassNotFoundException => throw new RuntimeException(e)
     }
@@ -15,10 +15,10 @@ object NtlmTestingEngine {
   }
 }
 
-class NtlmTestingEngine extends HtmlUnitTestingEngineImpl {
+class NTLMTestingEngine extends HtmlUnitTestingEngineImpl {
   override protected def createWebClient() = {
     val webClient = super.createWebClient
-    webClient setWebConnection new NtlmWebConnection(webClient)
+    webClient setWebConnection new NTLMWebConnection(webClient)
     webClient
   }
 }
