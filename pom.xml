@@ -30,6 +30,13 @@
             <artifactId>scalaj-collection_2.8.0</artifactId>
             <version>1.0</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.scala-tools.testing</groupId>
+            <artifactId>specs_2.8.1</artifactId>
+            <version>1.6.6</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src/main/scala</sourceDirectory>

@@ -183,29 +183,32 @@ class MessageBuilder {
     array(pos + 2) = (value >>> 16).toByte
     array(pos + 3) = (value >>> 24).toByte
   }
-  def addNTLMHeader: Unit = addBytes(NTLM.ntlmHeader)
-  def addBytes(bytes: Array[Byte]): Unit = actions += new FixedAction(bytes.length) {
+  private def withAction(a: Action) = {
+    actions += a
+    this
+  }
+  def addNTLMHeader = addBytes(NTLM.ntlmHeader)
+  def addBytes(bytes: Array[Byte]) = this withAction new FixedAction(bytes.length) {
     def set(array: Array[Byte], fixed: Int, dynamic: Int) =
       System.arraycopy(bytes, 0, array, fixed, bytes.length)
   }
-  def addShort(value: Int): Unit = actions += new FixedAction(2) {
+  def addShort(value: Int) = this withAction new FixedAction(2) {
     def set(array: Array[Byte], fixed: Int, dynamic: Int) = {
       array(fixed) = value.toByte
       array(fixed + 1) = (value >>> 8).toByte
     }
   }
-  def addInt(value: Int): Unit = actions += new FixedAction(4) {
+  def addInt(value: Int) = this withAction new FixedAction(4) {
     def set(array: Array[Byte], fixed: Int, dynamic: Int) = writeInt(array, fixed, value)
   }
   def addFlags(flags: Set[Flag]) = addInt((0 /: flags)((flags, flag) => flags | flag.mask))
-  def addSecurityBuffer(buffer: Array[Byte]): Unit = {
+  def addSecurityBuffer(buffer: Array[Byte]) = {
     addShort(buffer.length)
     addShort(buffer.length)
-    actions += new FixedAction(4) {
-      val getFixed = 4
+    this withAction new FixedAction(4) {
       def set(array: Array[Byte], fixed: Int, dynamic: Int) = writeInt(array, fixed, dynamic)
     }
-    actions += new DynamicAction(buffer.length) {
+    this withAction new DynamicAction(buffer.length) {
       def set(array: Array[Byte], fixed: Int, dynamic: Int) =
         System.arraycopy(buffer, 0, array, dynamic, buffer.length)
     }
