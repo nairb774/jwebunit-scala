@@ -83,6 +83,7 @@ trait SWebUnit {
     def to(url: URL): Unit = to(url.toExternalForm)
   }
   object text {
+    def fromId(id: String): String = byXPath("id('" + id + "')")
     def byXPath(xpath: String): String = wt getElementTextByXPath xpath
   }
 
@@ -91,7 +92,9 @@ trait SWebUnit {
 
   class FormAssign private[SWebUnit] (key: String) {
     def <~(value: String): Unit = wt setTextField (key, value)
+    def pick(value: String): Unit = wt.selectOptionByValue(key, value)
   }
   implicit def toFormAssign(key: String): FormAssign = new FormAssign(key)
   implicit def toFormAssign(s: Symbol): FormAssign = new FormAssign(_stringForSymbol(s))
 }
+
