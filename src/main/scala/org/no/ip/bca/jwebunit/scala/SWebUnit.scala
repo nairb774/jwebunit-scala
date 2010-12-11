@@ -45,6 +45,11 @@ trait SWebUnit {
       case e: IElement => throw new IllegalArgumentException("Unable to click IElement of type: " + e.getClass)
     }
   }
+  
+  object close {
+    def browser = wt.closeBrowser
+    def window = wt.closeWindow
+  }
 
   object element {
     def byId(id: Symbol): IElement = byId(_stringForSymbol(id))
