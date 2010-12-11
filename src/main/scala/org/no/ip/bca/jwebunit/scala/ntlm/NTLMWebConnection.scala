@@ -1,11 +1,11 @@
-package org.no.ip.bca.jwebunit.scala
+package org.no.ip.bca.jwebunit.scala.ntlm
 
 import com.gargoylesoftware.htmlunit.HttpWebConnection
 import com.gargoylesoftware.htmlunit.WebClient
 import org.apache.http.impl.client.AbstractHttpClient
 import org.apache.http.auth.AuthScope
 
-class NtlmWebConnection(wc: WebClient) extends HttpWebConnection(wc) {
+class NTLMWebConnection(wc: WebClient) extends HttpWebConnection(wc) {
     override protected def createHttpClient(): AbstractHttpClient = {
         val provider = wc.getCredentialsProvider
         val creds = provider.getCredentials(new AuthScope("", AuthScope.ANY_PORT))
@@ -14,7 +14,7 @@ class NtlmWebConnection(wc: WebClient) extends HttpWebConnection(wc) {
         }
         
         val client = super.createHttpClient
-        client.getAuthSchemes.register("ntlm", new NTLMSchemeFactory())
+        client.getAuthSchemes.register("ntlm", NTLMSchemeFactory)
         client
     }
 }
