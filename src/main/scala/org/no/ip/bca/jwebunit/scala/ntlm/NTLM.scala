@@ -83,13 +83,7 @@ object NTLM {
       value
     }
 
-    def readFlags = {
-      val flags = readInt
-      println("flags: " + flags)
-      val f = Flag.parseFlags(flags)
-      println(f)
-      f
-    }
+    def readFlags = Flag.parseFlags(readInt)
 
     def readShort: Int = {
       val value = array(pos) | (array(pos + 1) << 8)
@@ -146,7 +140,6 @@ object NTLM {
     val flags = parser.readFlags
     val targetName = new String(targetNameBytes, getCharset(flags).name)
     val challenge = parser.readBytes(8)
-    println("challenge: " + java.util.Arrays.toString(challenge))
     val context = if (parser.hasMore) Some(parser.readBytes(8)) else None
     val targetInformation = if (parser.hasMore) Some(parser.readSecurityBuffer) else None
     new Message2(flags, targetName, challenge, targetInformation)
@@ -274,7 +267,7 @@ object Message3 {
   import javax.crypto._
   import javax.crypto.spec._
   /** Since MD4 is not standard - check for one that is registered, then try for a hidden sun one. Or else fail. */
-  private val md4Factory: () => MessageDigest = (try {
+  private lazy val md4Factory: () => MessageDigest = (try {
     MessageDigest.getInstance("MD4")
     Some(() => MessageDigest.getInstance("MD4"))
   } catch {
@@ -300,7 +293,7 @@ object Message3 {
   }
 
   private def doMD4(bytes: ByteBuffer) = {
-    val digester = MessageDigest.getInstance("MD4", "BC")
+    val digester = md4Factory()
     digester.update(bytes)
     digester.digest
   }
@@ -424,8 +417,6 @@ class Message3(lm: Array[Byte], ntlm: Array[Byte], domain: String, username: Str
     builder.addInt(3)
     builder.addSecurityBuffer(lm)
     builder.addSecurityBuffer(ntlm)
-    println(java.util.Arrays.toString(lm))
-    println(java.util.Arrays.toString(ntlm))
 
     val charset = NTLM.getCharset(flags)
     builder.addSecurityString(domain, charset)
