@@ -1,11 +1,12 @@
 package org.no.ip.bca.jwebunit.scala
 
+import com.gargoylesoftware.htmlunit.Page
 import java.lang.ref.{ ReferenceQueue, PhantomReference }
 import java.net.URL
-import net.sourceforge.jwebunit.junit.WebTester
 import net.sourceforge.jwebunit.api.IElement
 import net.sourceforge.jwebunit.htmlunit.{ HtmlUnitTestingEngineImpl, HtmlUnitElementImpl }
-import com.gargoylesoftware.htmlunit.Page
+import net.sourceforge.jwebunit.junit.WebTester
+import ntlm.NTLMTestingEngine
 import scalaj.collection.Imports._
 
 private object SWebUnit extends Runnable {
@@ -37,7 +38,6 @@ private object SWebUnit extends Runnable {
       run
   }
 }
-import ntlm.NTLMTestingEngine
 
 trait SWebUnit {
   private val wt = new WebTester
