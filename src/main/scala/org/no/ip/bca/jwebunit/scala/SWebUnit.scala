@@ -1,5 +1,6 @@
 package org.no.ip.bca.jwebunit.scala
 
+import java.lang.ref.{ ReferenceQueue, PhantomReference }
 import java.net.URL
 import net.sourceforge.jwebunit.junit.WebTester
 import net.sourceforge.jwebunit.api.IElement
@@ -7,6 +8,35 @@ import net.sourceforge.jwebunit.htmlunit.{ HtmlUnitTestingEngineImpl, HtmlUnitEl
 import com.gargoylesoftware.htmlunit.Page
 import scalaj.collection.Imports._
 
+private object SWebUnit extends Runnable {
+  private var outstanding: Map[PhantomReference[SWebUnit], WebTester] = Map.empty
+  private val queue = new ReferenceQueue[SWebUnit]
+  private def add(swt: SWebUnit): Unit = {
+    val count = this.synchronized {
+      outstanding += new PhantomReference(swt, queue) -> swt.wt
+      outstanding.size
+    }
+    if (count == 1) {
+      val thread = new Thread(this)
+      thread setDaemon true
+      thread setName "SWebUnit browser auto closer thread: 1"
+      thread.start
+    }
+  }
+
+  def run: Unit = {
+    val ref = queue.remove.asInstanceOf[PhantomReference[SWebUnit]]
+    val (wt, size) = this.synchronized {
+      val out = outstanding(ref)
+      outstanding -= ref
+      (out, outstanding.size)
+    }
+    wt.closeBrowser
+    Thread.currentThread.setName("SWebUnit browser auto closer thread: " + size)
+    if (size > 0)
+      run
+  }
+}
 import ntlm.NTLMTestingEngine
 
 trait SWebUnit {
@@ -103,5 +133,8 @@ trait SWebUnit {
   }
   implicit def toFormAssign(key: String): FormAssign = new FormAssign(key)
   implicit def toFormAssign(s: Symbol): FormAssign = new FormAssign(_stringForSymbol(s))
+
+  // Must be last
+  SWebUnit add this
 }
 
