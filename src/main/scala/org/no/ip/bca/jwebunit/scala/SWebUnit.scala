@@ -91,6 +91,12 @@ trait SWebUnit {
   object elements {
     def byXPath(xpath: String): Seq[IElement] = wt getElementsByXPath xpath asScala
   }
+  object exists {
+    def form(name: String) = wt.getTestingEngine.hasForm(name)
+    def formParameter(name: String) = wt.getTestingEngine.hasFormParameterNamed(name)
+    def id(id: String) = wt.getTestingEngine.hasElement(id)
+    def XPath(xpath: String) = wt.getTestingEngine.hasElementByXPath(xpath)
+  }
   def form(formName: Symbol)(f: => Unit): Unit = form(_stringForSymbol(formName))(f)
   def form(formName: String)(f: => Unit): Unit = {
     wt setWorkingForm formName
@@ -124,8 +130,10 @@ trait SWebUnit {
     def byXPath(xpath: String): String = wt getElementTextByXPath xpath
   }
   object until {
-    def form(name: String) = await("Form: " + name) { wt.getTestingEngine.hasForm(name) }
-    def formParameter(name: String) = await("Form name: " + name) { wt.getTestingEngine.hasFormParameterNamed(name) }
+    def form(name: String) = await("Form: " + name) { exists form name }
+    def formParameter(name: String) = await("Form name: " + name) { exists formParameter name }
+    def id(id: String) = await("ID: " + id) { exists id id }
+    def XPath(xpath: String) = await("XPath: " + xpath) { exists XPath xpath }
   }
 
   private def await(fr: String)(f: => Boolean) = {
