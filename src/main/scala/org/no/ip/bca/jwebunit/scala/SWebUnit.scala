@@ -123,6 +123,20 @@ trait SWebUnit {
     def fromId(id: String): String = byXPath("id('" + id + "')")
     def byXPath(xpath: String): String = wt getElementTextByXPath xpath
   }
+  object until {
+    def form(name: String) = await("Form: " + name) { wt.getTestingEngine.hasForm(name) }
+    def formParameter(name: String) = await("Form name: " + name) { wt.getTestingEngine.hasFormParameterNamed(name) }
+  }
+
+  private def await(fr: String)(f: => Boolean) = {
+    val end = System.nanoTime + 600E9.toLong;
+    while (!f) {
+      if (System.nanoTime > end) {
+        throw new IllegalStateException(fr)
+      }
+      Thread.sleep(10)
+    }
+  }
 
   def pageSource = wt.getPageSource
   def serverResponse = wt.getServerResponse
