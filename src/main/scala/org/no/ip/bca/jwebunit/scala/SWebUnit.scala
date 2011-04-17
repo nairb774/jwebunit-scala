@@ -54,6 +54,9 @@ trait SWebUnit {
   def pageUrl: URL = wt.getTestingEngine.getPageURL
   def pageUrl_=(url: String): Unit = wt beginAt url
 
+  def userAgent = wt.getTestContext.getUserAgent
+  def userAgent_=(userAgent: String) = wt.getTestContext.setUserAgent(userAgent)
+
   object authorize {
     def ntlm(user: String, password: String, domain: String): Unit = {
       wt setTestingEngineKey NTLMTestingEngine.register
