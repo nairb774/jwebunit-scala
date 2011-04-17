@@ -40,7 +40,7 @@ private object SWebUnit extends Runnable {
 }
 
 trait SWebUnit {
-  private val wt = new WebTester
+  protected val wt = new WebTester
   private var afterLinkClick: Option[() => Unit] = None
 
   def stringForSymbol(s: Symbol): Option[String] = None
